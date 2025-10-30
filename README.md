@@ -1,14 +1,15 @@
-# 🔔 Bloom Energy IR Dashboard
+# 🔔 BEEIR - Bloom Energy Investor Relations Feed
 
-Real-time monitoring dashboard for Bloom Energy Corporation (BE) investor relations press releases.
+**Welcome to BEEIR!** Your real-time monitoring dashboard for Bloom Energy Corporation (BE) investor relations press releases.
 
 ## Features
 
-- 📰 Displays the latest 10 press releases
+- 📰 Displays the latest 3 press releases
+- 📧 Email subscription for instant notifications
 - 🆕 Alerts when new press releases are published
 - ⏱️ Auto-refreshes every 20 minutes
 - 🔗 Direct links to full press releases
-- 📊 Clean, minimalist dashboard design
+- 📊 Clean, elegant, minimalist dashboard design
 
 ## Live Demo
 
@@ -17,9 +18,14 @@ Real-time monitoring dashboard for Bloom Energy Corporation (BE) investor relati
 ## How to Use
 
 Simply visit the dashboard and it will:
-1. Show you the latest Bloom Energy investor relations news
+1. Show you the latest 3 Bloom Energy investor relations news
 2. Alert you when something new is published
-3. Auto-refresh to keep you updated
+3. Subscribe with your email to get notified
+4. Auto-refresh every 20 minutes to keep you updated
+
+### What's a Feed/RSS?
+
+Think of BEEIR as your personal news channel for BE. Instead of checking their website manually, this dashboard automatically checks for you and shows new updates. You can subscribe with your email to get alerts directly in your inbox!
 
 ## Run Locally
 
