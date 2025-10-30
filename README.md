@@ -36,7 +36,7 @@ streamlit run be_alert.py
 
 ## Data Source
 
-All data is fetched from [Bloom Energy's official Investor Relations page](https://investor.bloomenergy.com/press-releases).
+All data is fetched from [Bloom Energy's official RSS feed](https://investor.bloomenergy.com/rss) - a reliable, structured feed provided by Bloom Energy Corporation.
 
 ---
 

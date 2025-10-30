@@ -1,6 +1,5 @@
 import streamlit as st
-import requests
-from bs4 import BeautifulSoup
+import feedparser
 from datetime import datetime
 import json
 import os
@@ -14,27 +13,29 @@ NY_TZ = pytz.timezone('America/New_York')
 
 st.set_page_config(page_title="BE IR Monitor", page_icon="🔔", layout="wide")
 
+@st.cache_data(ttl=1200)  # Cache for 20 minutes (1200 seconds)
 def fetch_all_releases():
-    """Fetch all recent press releases from BE investor relations"""
+    """Fetch all recent press releases from BE investor relations RSS feed"""
     try:
-        url = "https://investor.bloomenergy.com/press-releases"
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
-        soup = BeautifulSoup(response.content, 'html.parser')
+        # Use official RSS feed
+        rss_url = "https://investor.bloomenergy.com/rss"
+        feed = feedparser.parse(rss_url)
         
         releases = []
-        items = soup.find_all('div', class_='module-headline')
-        
-        for item in items[:3]:  # Get latest 3 releases
-            title = item.get_text(strip=True)
-            link = item.find('a')['href'] if item.find('a') else ''
-            if link and not link.startswith('http'):
-                link = 'https://investor.bloomenergy.com' + link
+        # Get latest 3 releases
+        for entry in feed.entries[:3]:
+            title = entry.title
+            link = entry.link
+            # Parse date from RSS (already in ET timezone)
+            pub_date = datetime(*entry.published_parsed[:6], tzinfo=pytz.timezone('America/New_York'))
+            date_str = pub_date.strftime('%b %d, %Y at %I:%M %p ET')
             
-            # Try to find date
-            date_elem = item.find_parent().find('time') if item.find_parent() else None
-            date = date_elem.get_text(strip=True) if date_elem else 'Recent'
-            
-            releases.append({'title': title, 'link': link, 'date': date})
+            releases.append({
+                'title': title,
+                'link': link,
+                'date': date_str,
+                'guid': entry.get('id', '')
+            })
         
         return releases
     except Exception as e:
@@ -80,7 +81,9 @@ with col1:
 with col2:
     st.metric("Last Check (NY)", ny_time.strftime('%I:%M %p ET'))
 with col3:
-    st.button("🔄 Refresh", type="primary")
+    if st.button("🔄 Refresh", type="primary"):
+        st.cache_data.clear()
+        st.rerun()
 
 st.markdown("---")
 
@@ -142,8 +145,6 @@ elif releases:
 else:
     st.warning("No press releases found")
 
-# Auto-refresh
-time.sleep(2)
-st.rerun()
+# Note: Auto-refresh happens via cache TTL (20 minutes)
 
 
