@@ -1,0 +1,10 @@
+last_press_release.json
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+*.so
+.Python
+env/
+venv/
+
