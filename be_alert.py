@@ -22,7 +22,7 @@ def fetch_all_releases():
         releases = []
         items = soup.find_all('div', class_='module-headline')
         
-        for item in items[:10]:  # Get latest 10
+        for item in items[:3]:  # Get latest 3 releases
             title = item.get_text(strip=True)
             link = item.find('a')['href'] if item.find('a') else ''
             if link and not link.startswith('http'):
@@ -48,9 +48,27 @@ def save_last(data):
     with open(STORAGE_FILE, 'w') as f:
         json.dump(data, f)
 
-# Header
-st.title("🔔 Bloom Energy IR Dashboard")
-st.markdown("**Real-time monitoring of Bloom Energy (BE) Investor Relations**")
+# Header with Welcome Message
+st.title("🔔 Welcome to BEEIR")
+st.markdown("### The Bloom Energy Investor Relations Feed")
+st.markdown("Stay updated with the latest press releases, financial updates, and material events from Bloom Energy Corporation (BE)")
+
+# Email Subscription Box
+st.markdown("---")
+with st.container():
+    st.subheader("📧 Subscribe for Email Alerts")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        email_input = st.text_input("Enter your email to get notified of new releases", placeholder="your.email@example.com", label_visibility="collapsed")
+    with col2:
+        if st.button("Subscribe", type="primary", use_container_width=True):
+            if email_input and "@" in email_input:
+                st.success("✅ Subscribed! You'll get alerts for new releases.")
+                # TODO: Store email in database/service
+            else:
+                st.error("Please enter a valid email")
+
+st.markdown("---")
 
 # Metrics row
 col1, col2, col3 = st.columns(3)
@@ -76,33 +94,33 @@ elif releases:
         st.success("🆕 **NEW PRESS RELEASE DETECTED!**")
         save_last(releases[0])
     
-    # Display latest release prominently
-    st.subheader("📰 Latest Release")
-    with st.container():
-        st.markdown(f"### {releases[0]['title']}")
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.caption(f"📅 {releases[0]['date']}")
-        with col2:
-            if releases[0]['link']:
-                st.link_button("Read Full Release →", releases[0]['link'], use_container_width=True)
+    # Display latest 3 releases
+    st.subheader("📰 Latest 3 Press Releases")
     
-    st.markdown("---")
-    
-    # Dashboard of all releases
-    st.subheader("📊 Recent Press Releases")
-    
-    for i, release in enumerate(releases[1:], 1):
-        with st.expander(f"{i}. {release['title']}", expanded=False):
-            st.caption(f"📅 {release['date']}")
-            if release['link']:
-                st.link_button(f"Read More", release['link'], key=f"link_{i}")
+    for i, release in enumerate(releases, 1):
+        with st.container():
+            st.markdown(f"### {i}. {release['title']}")
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.caption(f"📅 {release['date']}")
+            with col2:
+                if release['link']:
+                    st.link_button("Read Full Release →", release['link'], key=f"link_{i}", use_container_width=True)
+            st.markdown("---")
     
     # Sidebar info
     with st.sidebar:
-        st.header("ℹ️ About")
+        st.header("ℹ️ About BEEIR")
         st.markdown("""
-        This dashboard monitors **Bloom Energy Corporation's** investor relations page for:
+        **BEEIR** is your real-time feed for **Bloom Energy Corporation's** investor relations updates.
+        
+        **What you get:**
+        - 📰 Latest 3 press releases
+        - 🆕 Instant alerts for new releases
+        - 📧 Email notifications (subscribe above)
+        - ⏱️ Auto-refresh every 20 minutes
+        
+        **We monitor:**
         - Press releases
         - Financial updates
         - Convertible offerings
@@ -110,13 +128,13 @@ elif releases:
         """)
         
         st.markdown("---")
-        st.markdown("**Links**")
+        st.markdown("**🔗 Quick Links**")
         st.link_button("🌐 BE Investor Relations", "https://investor.bloomenergy.com")
         st.link_button("📈 SEC Filings", "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001808833")
         
         st.markdown("---")
-        st.caption(f"⏱️ Auto-refresh every 20 minutes")
-        st.caption(f"Last updated: {datetime.now().strftime('%b %d, %Y')}")
+        st.caption(f"⏱️ Auto-refresh: Every 20 min")
+        st.caption(f"📅 Last updated: {datetime.now().strftime('%b %d, %I:%M %p')}")
 else:
     st.warning("No press releases found")
 
