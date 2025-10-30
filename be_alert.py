@@ -5,10 +5,12 @@ from datetime import datetime
 import json
 import os
 import time
+import pytz
 
 # Config
 CHECK_INTERVAL = 1200  # 20 minutes in seconds
 STORAGE_FILE = "last_press_release.json"
+NY_TZ = pytz.timezone('America/New_York')
 
 st.set_page_config(page_title="BE IR Monitor", page_icon="🔔", layout="wide")
 
@@ -71,11 +73,12 @@ with st.container():
 st.markdown("---")
 
 # Metrics row
+ny_time = datetime.now(NY_TZ)
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Ticker", "BE")
 with col2:
-    st.metric("Last Check", datetime.now().strftime('%I:%M %p'))
+    st.metric("Last Check (NY)", ny_time.strftime('%I:%M %p ET'))
 with col3:
     st.button("🔄 Refresh", type="primary")
 
@@ -134,7 +137,8 @@ elif releases:
         
         st.markdown("---")
         st.caption(f"⏱️ Auto-refresh: Every 20 min")
-        st.caption(f"📅 Last updated: {datetime.now().strftime('%b %d, %I:%M %p')}")
+        ny_time_sidebar = datetime.now(NY_TZ)
+        st.caption(f"📅 Last updated: {ny_time_sidebar.strftime('%b %d, %I:%M %p ET')}")
 else:
     st.warning("No press releases found")
 
